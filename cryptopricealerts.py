@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Geliştirilmiş Kripto Para Takip ve Alarm Uygulaması
-Modern arayüz ve gelişmiş özelliklerle kripto para fiyatlarını takip edin.
-"""
-
 import tkinter as tk
 from tkinter import ttk, messagebox
 import customtkinter as ctk
@@ -20,74 +13,73 @@ import io
 from typing import Dict, List, Optional
 import webbrowser
 
-# CustomTkinter tema ayarları
+
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
 class ModernCryptoApp:
     def __init__(self):
-        # Ana pencere
+        
         self.root = ctk.CTk()
         self.root.title("🚀 Kripto Takip Pro")
         self.root.geometry("1400x900")
         self.root.minsize(1000, 700)
         
-        # Veri depolama
+        
         self.watchlist = self.load_watchlist()
         self.alarms = self.load_alarms()
         self.crypto_images = {}
         self.search_results_data = []
         
-        # Threading kontrolü
+        
         self.monitoring_active = True
         self.search_after_id = None
         
-        # UI değişkenleri
+        
         self.current_prices = {}
         
         self.setup_ui()
         self.start_price_monitoring()
         
-        # İlk yükleme
+        
         self.refresh_watchlist()
         self.refresh_alarms()
         
     def setup_ui(self):
-        """Modern arayüzü oluştur"""
-        # Ana container
+       
         main_container = ctk.CTkFrame(self.root, fg_color="transparent")
         main_container.pack(fill="both", expand=True, padx=20, pady=20)
         
-        # Üst panel - Başlık ve İstatistikler
+        
         self.create_header(main_container)
         
-        # Ana içerik alanı
+        
         content_frame = ctk.CTkFrame(main_container, fg_color="transparent")
         content_frame.pack(fill="both", expand=True, pady=(20, 0))
         
-        # Sol panel - Arama ve İzleme Listesi
+       
         left_panel = ctk.CTkFrame(content_frame, width=800)
         left_panel.pack(side="left", fill="both", expand=True, padx=(0, 10))
         left_panel.pack_propagate(False)
         
-        # Sağ panel - Alarmlar
+      
         right_panel = ctk.CTkFrame(content_frame, width=350)
         right_panel.pack(side="right", fill="both", padx=(10, 0))
         right_panel.pack_propagate(False)
         
-        # Sol paneli kur
+        
         self.setup_left_panel(left_panel)
         
-        # Sağ paneli kur
+        
         self.setup_right_panel(right_panel)
         
     def create_header(self, parent):
-        """Başlık ve istatistik paneli"""
+        
         header_frame = ctk.CTkFrame(parent, height=120, fg_color=("gray90", "gray15"))
         header_frame.pack(fill="x", pady=(0, 20))
         header_frame.pack_propagate(False)
         
-        # Sol kısım - Başlık
+        
         title_frame = ctk.CTkFrame(header_frame, fg_color="transparent")
         title_frame.pack(side="left", fill="y", padx=30, pady=20)
         
@@ -107,19 +99,19 @@ class ModernCryptoApp:
         )
         subtitle_label.pack(anchor="w", pady=(5, 0))
         
-        # Sağ kısım - İstatistikler
+        
         stats_frame = ctk.CTkFrame(header_frame, fg_color="transparent")
         stats_frame.pack(side="right", fill="y", padx=30, pady=20)
         
-        # İstatistik kartları
+        
         self.create_stat_cards(stats_frame)
         
     def create_stat_cards(self, parent):
-        """İstatistik kartları"""
+        
         cards_frame = ctk.CTkFrame(parent, fg_color="transparent")
         cards_frame.pack(fill="both", expand=True)
         
-        # İzlenen kripto sayısı
+       
         watchlist_card = ctk.CTkFrame(cards_frame, width=120, height=80)
         watchlist_card.pack(side="left", padx=10)
         watchlist_card.pack_propagate(False)
@@ -137,7 +129,7 @@ class ModernCryptoApp:
             font=ctk.CTkFont(size=12)
         ).pack()
         
-        # Aktif alarm sayısı
+        
         active_alarms = len([a for a in self.alarms if not a.get('triggered', False)])
         alarms_card = ctk.CTkFrame(cards_frame, width=120, height=80)
         alarms_card.pack(side="left", padx=10)
@@ -156,7 +148,7 @@ class ModernCryptoApp:
             font=ctk.CTkFont(size=12)
         ).pack()
         
-        # Tetiklenen alarm sayısı
+       
         triggered_alarms = len([a for a in self.alarms if a.get('triggered', False)])
         triggered_card = ctk.CTkFrame(cards_frame, width=120, height=80)
         triggered_card.pack(side="left", padx=10)
@@ -176,8 +168,7 @@ class ModernCryptoApp:
         ).pack()
         
     def setup_left_panel(self, parent):
-        """Sol panel - Arama ve İzleme Listesi"""
-        # Arama bölümü
+        
         search_frame = ctk.CTkFrame(parent, height=200)
         search_frame.pack(fill="x", padx=20, pady=20)
         search_frame.pack_propagate(False)
@@ -189,7 +180,7 @@ class ModernCryptoApp:
         )
         search_title.pack(pady=(20, 15))
         
-        # Arama çubuğu
+        
         search_container = ctk.CTkFrame(search_frame, fg_color="transparent")
         search_container.pack(fill="x", padx=20)
         
@@ -211,7 +202,7 @@ class ModernCryptoApp:
         )
         search_btn.pack(side="right")
         
-        # Arama sonuçları
+       
         self.search_results_frame = ctk.CTkScrollableFrame(
             search_frame,
             height=100,
@@ -219,11 +210,11 @@ class ModernCryptoApp:
         )
         self.search_results_frame.pack(fill="both", expand=True, padx=20, pady=(15, 20))
         
-        # İzleme listesi bölümü
+       
         watchlist_frame = ctk.CTkFrame(parent)
         watchlist_frame.pack(fill="both", expand=True, padx=20, pady=(0, 20))
         
-        # Üst bar
+        
         watchlist_header = ctk.CTkFrame(watchlist_frame, height=60)
         watchlist_header.pack(fill="x", padx=20, pady=(20, 0))
         watchlist_header.pack_propagate(False)
@@ -243,13 +234,12 @@ class ModernCryptoApp:
         )
         refresh_btn.pack(side="right", pady=15, padx=(0, 20))
         
-        # İzleme listesi içeriği
+       
         self.watchlist_container = ctk.CTkScrollableFrame(watchlist_frame)
         self.watchlist_container.pack(fill="both", expand=True, padx=20, pady=20)
         
     def setup_right_panel(self, parent):
-        """Sağ panel - Alarmlar"""
-        # Başlık
+      
         alarms_header = ctk.CTkFrame(parent, height=60)
         alarms_header.pack(fill="x", padx=20, pady=20)
         alarms_header.pack_propagate(False)
@@ -261,7 +251,7 @@ class ModernCryptoApp:
         )
         alarms_title.pack(side="left", pady=20)
         
-        # Yeni alarm butonu
+        
         new_alarm_btn = ctk.CTkButton(
             alarms_header,
             text="➕ Yeni",
@@ -270,12 +260,12 @@ class ModernCryptoApp:
         )
         new_alarm_btn.pack(side="right", pady=15, padx=(0, 20))
         
-        # Alarmlar listesi
+        
         self.alarms_container = ctk.CTkScrollableFrame(parent)
         self.alarms_container.pack(fill="both", expand=True, padx=20, pady=(0, 20))
         
     def on_search_change(self, event):
-        """Arama değişikliğinde tetiklenir"""
+        
         if self.search_after_id:
             self.root.after_cancel(self.search_after_id)
         
@@ -286,7 +276,7 @@ class ModernCryptoApp:
             self.clear_search_results()
     
     def manual_search(self):
-        """Manuel arama butonu"""
+       
         query = self.search_entry.get().strip()
         if len(query) >= 2:
             self.search_crypto(query)
@@ -294,10 +284,10 @@ class ModernCryptoApp:
             messagebox.showwarning("Uyarı", "En az 2 karakter giriniz!")
     
     def search_crypto(self, query):
-        """Kripto para arama"""
+        
         def search_thread():
             try:
-                # Loading göster
+                
                 self.root.after(0, self.show_search_loading)
                 
                 url = f"https://api.coingecko.com/api/v3/search?query={query}"
@@ -314,7 +304,7 @@ class ModernCryptoApp:
         threading.Thread(target=search_thread, daemon=True).start()
     
     def show_search_loading(self):
-        """Arama loading göster"""
+        
         self.clear_search_results()
         loading_frame = ctk.CTkFrame(self.search_results_frame, height=60)
         loading_frame.pack(fill="x", pady=10)
@@ -326,7 +316,7 @@ class ModernCryptoApp:
         ).pack(pady=20)
     
     def display_search_results(self):
-        """Arama sonuçlarını göster"""
+        
         self.clear_search_results()
         
         if not self.search_results_data:
@@ -344,12 +334,12 @@ class ModernCryptoApp:
             self.create_search_result_item(crypto)
     
     def create_search_result_item(self, crypto):
-        """Geliştirilmiş arama sonucu öğesi"""
+        
         item_frame = ctk.CTkFrame(self.search_results_frame, height=70)
         item_frame.pack(fill="x", pady=5)
         item_frame.pack_propagate(False)
         
-        # Logo placeholder
+       
         logo_frame = ctk.CTkFrame(item_frame, width=50, height=50, corner_radius=25)
         logo_frame.pack(side="left", padx=15, pady=10)
         logo_frame.pack_propagate(False)
@@ -357,7 +347,7 @@ class ModernCryptoApp:
         logo_label = ctk.CTkLabel(logo_frame, text="📈", font=ctk.CTkFont(size=20))
         logo_label.pack(expand=True)
         
-        # Bilgiler
+        
         info_frame = ctk.CTkFrame(item_frame, fg_color="transparent")
         info_frame.pack(side="left", fill="both", expand=True, padx=10, pady=10)
         
@@ -376,10 +366,10 @@ class ModernCryptoApp:
         )
         symbol_label.pack(anchor="w")
         
-        # Durum kontrolü
+        
         is_in_watchlist = any(item['id'] == crypto['id'] for item in self.watchlist)
         
-        # Ekle/Eklendi butonu
+        
         if is_in_watchlist:
             status_btn = ctk.CTkButton(
                 item_frame,
@@ -400,11 +390,11 @@ class ModernCryptoApp:
         
         status_btn.pack(side="right", padx=15, pady=20)
         
-        # Logo yükle
+        
         self.load_crypto_image_async(crypto['id'], crypto.get('large', ''), logo_label)
     
     def load_crypto_image_async(self, crypto_id, image_url, label):
-        """Asenkron logo yükleme"""
+       
         if not image_url or crypto_id in self.crypto_images:
             return
             
@@ -425,14 +415,14 @@ class ModernCryptoApp:
         threading.Thread(target=load_image, daemon=True).start()
     
     def update_image_label(self, label, photo):
-        """Label'ı güncelle"""
+        
         try:
             label.configure(image=photo, text="")
         except:
             pass
     
     def add_to_watchlist(self, crypto):
-        """İzleme listesine ekle"""
+        
         crypto_data = {
             'id': crypto['id'],
             'name': crypto['name'],
@@ -445,8 +435,8 @@ class ModernCryptoApp:
         self.watchlist.append(crypto_data)
         self.save_watchlist()
         
-        # UI güncelle
-        self.display_search_results()  # Arama sonuçlarını yenile
+        
+        self.display_search_results()  
         self.refresh_watchlist()
         self.update_stats()
         
